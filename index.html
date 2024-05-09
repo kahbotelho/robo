@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROBO</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #162447;
+            color: #ffffff;
+            overflow-y: scroll;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 100px;
+        }
+
+        .buttons {
+            text-align: center;
+        }
+
+        .buttons button {
+            background-color: transparent;
+            color: #22ff81;
+            border: 3px solid #22ff81;
+            border-radius: 30px;
+            padding: 10px 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .buttons button#facebookButton {
+            border-color: #4267B2;
+            color: #4267B2;
+        }
+
+        .buttons button#photosButton {
+            border-color: #FFA500;
+            color: #FFA500;
+        }
+
+        .buttons button#startButton {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        main {
+            display: flex;
+            padding: 20px;
+        }
+
+        .left-column,
+        .right-column {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        section {
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            padding: 20px;
+            color: #162447;
+            position: relative;
+            border-radius: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .post {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .post-image {
+            max-width: 100px;
+            /* Definindo um tamanho máximo */
+            max-height: 100px;
+            /* Definindo um tamanho máximo */
+            margin-right: 10px;
+        }
+
+        .post-buttons {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: none;
+        }
+
+        .post-buttons button {
+            margin-right: 5px;
+            background-color: #FF5733;
+            border: none;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .post-buttons button:hover {
+            background-color: #FF8C66;
+        }
+
+        .select-all {
+            margin-bottom: 10px;
+        }
+
+        .select-all input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #162447;
+            margin: auto;
+            padding: 20px;
+            width: 50%;
+            max-width: 600px;
+            border-radius: 5px;
+            position: relative;
+            border: 3px solid #22a7f0;
+        }
+
+        .modal-content textarea {
+            height: 200px;
+            resize: none;
+            margin: 20px auto;
+            display: block;
+            width: calc(100% - 40px);
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background-color: #ffffff;
+            color: #162447;
+        }
+
+        .modal-content label {
+            display: block;
+            background-color: #22ff81;
+            color: #000000;
+            border-radius: 30px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .modal-content input[type="file"] {
+            display: none;
+        }
+
+        .modal-content button {
+            background-color: #22ff81;
+            color: #000000;
+            border-radius: 30px;
+            padding: 10px 30px;
+            cursor: pointer;
+            margin-top: 20px;
+            border: none;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #ffffff;
+        }
+
+        .group-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .group-item {
+            margin-bottom: 10px;
+        }
+
+        .group-item input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .search-bar {
+            margin-bottom: 10px;
+        }
+
+        .edited-photos-container {
+            display: flex;
+            flex-direction: row;
+            /* Alteração para exibir as fotos lado a lado */
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+
+
+        .edited-photo {
+            position: relative;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .edited-photo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .add-new-photo-button {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            font-size: 24px;
+            background-color: #22ff81;
+            color: #ffffff;
+            border-radius: 5px;
+        }
+
+        .modal-content .buttons button {
+            display: block;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .edited-photo .remove-photo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            from {
+                box-shadow: 0 0 8px #22ff81, 0 0 4px #22ff81;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <div class="buttons">
+            <button id="facebookButton">Facebook</button>
+            <button id="startButton">INICIAR</button>
+            <button id="photosButton"
+                style="border: 3px solid #4267B2; border-radius: 30px; padding: 10px 40px; background-color: #4267B2; color: #ffffff; cursor: pointer; animation: pulse 1s ease-in-out infinite;">FOTOS</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="left-column">
+            <section class="posts" id="posts">
+                <h2>Postagens</h2>
+                <div class="select-all">
+                    <input type="checkbox" id="selectAll">
+                    <label for="selectAll">Selecionar Tudo</label>
+                </div>
+                <!-- Área para postagens -->
+                <!-- Postagem de exemplo sem a foto -->
+                <div class="post" data-id="1">
+                    <input type="checkbox">
+                    <!-- Removi o elemento <img> abaixo -->
+                    <div class="post-buttons">
+                        <button class="remove-button" onclick="removePost(1)">Remover</button>
+                        <button class="edit-button" onclick="editPost(1, this)">Editar</button>
+                    </div>
+                    <textarea style="display: none;">Texto da postagem 1</textarea>
+                </div>
+            </section>
+            <section class="published">
+                <h2>Publicados</h2>
+                <!-- Área para posts publicados -->
+            </section>
+        </div>
+        <div class="right-column">
+            <section class="group">
+                <!-- Área para o grupo -->
+                <h2>Grupos do Facebook</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Pesquisar grupos...">
+                    <button id="selectAllButton">Selecionar Tudo</button>
+                </div>
+                <ul id="groupList" class="group-list">
+                    <!-- Os grupos serão adicionados dinamicamente aqui -->
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <div id="photosModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="color: #22a7f0;">Adicionar Fotos</h2>
+            <form id="addPhotosForm">
+                <textarea id="postText"
+                    style="width: calc(100% - 40px); height: 200px; resize: none; margin: 20px auto; display: block;"
+                    placeholder="Adicione um texto..."></textarea>
+                <label for="photoInput" id="photoInputLabel">Escolher Fotos</label>
+                <input type="file" id="photoInput" multiple style="display: none;">
+                <button type="button" id="savePhotosButton">Salvar</button>
+                <button type="button" id="cancelButton">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="color: #22a7f0;">Editar Postagem</h2>
+            <form id="editPostForm">
+                <textarea id="editPostText"
+                    style="width: calc(100% - 40px); height: 200px; resize: none; margin: 20px auto; display: block;"
+                    placeholder="Editar texto..."></textarea>
+                <div class="edited-photos-container" id="editedPhotosContainer">
+                    <!-- Aqui serão exibidas as fotos editadas -->
+                </div>
+                <label for="editPhotoInput" id="editPhotoInputLabel">Adicionar Fotos</label>
+                <input type="file" id="editPhotoInput" multiple style="display: none;">
+                <button type="button" id="saveEditButton">Salvar</button>
+                <button type="button" id="cancelEditButton">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let postCount = 0;
+        let postsData = [];
+
+        document.getElementById('photosButton').onclick = function () {
+            document.getElementById('photosModal').style.display = "block";
+        }
+
+        document.getElementById('facebookButton').onclick = function () {
+            window.location.href = "https://www.facebook.com/v13.0/dialog/oauth?client_id={seu-app-id}&redirect_uri={url-de-redirecionamento}&scope=user_groups";
+        }
+
+        const closeModal = function () {
+            document.getElementById('photosModal').style.display = "none";
+            document.getElementById('editModal').style.display = "none";
+        }
+
+        document.querySelectorAll('.close').forEach(item => {
+            item.addEventListener('click', closeModal);
+        });
+
+        document.getElementById('cancelButton').onclick = closeModal;
+        document.getElementById('cancelEditButton').onclick = closeModal;
+
+        document.getElementById('photoInput').onchange = function () {
+            document.getElementById('photoInputLabel').innerHTML = this.files.length + " foto(s) selecionada(s)";
+        }
+
+        document.getElementById('savePhotosButton').onclick = function () {
+            const text = document.getElementById('postText').value;
+            const photos = document.getElementById('photoInput').files;
+
+            if (photos.length > 0) {
+                const post = document.createElement('div');
+                post.className = 'post';
+                postCount++;
+                post.dataset.id = postCount;
+                let postHTML = `<input type="checkbox">`;
+
+                // Armazenamos a primeira foto selecionada como a imagem de capa da postagem
+                const capa = URL.createObjectURL(photos[0]);
+
+                for (let i = 0; i < photos.length; i++) {
+                    postHTML += `<img class="post-image" src="${URL.createObjectURL(photos[i])}" alt="Foto">`;
+                }
+
+                postHTML += `<div class="post-buttons">
+                        <button class="remove-button" onclick="removePost(${postCount})">Remover</button>
+                        <button class="edit-button" onclick="editPost(${postCount}, this)">Editar</button>
+                    </div>
+                    <textarea style="display: none;">${text}</textarea>`;
+
+                post.innerHTML = postHTML;
+                document.getElementById('posts').appendChild(post);
+
+                const postButtons = post.querySelector('.post-buttons');
+                postButtons.style.display = "block";
+
+                // Salva os dados da postagem
+                postsData.push({ id: postCount, text: text, photos: photos });
+
+                document.getElementById('postText').value = '';
+                document.getElementById('photoInputLabel').innerHTML = 'Selecionar Fotos';
+                document.getElementById('photoInput').value = '';
+                closeModal();
+            } else {
+                // Se nenhuma foto for selecionada, exibe uma imagem padrão como capa da postagem
+                const post = document.createElement('div');
+                post.className = 'post';
+                postCount++;
+                post.dataset.id = postCount;
+                let postHTML = `<input type="checkbox">
+                    <img class="post-image" src="no-image.png" alt="Sem imagem">`;
+
+                postHTML += `<div class="post-buttons">
+                        <button class="remove-button" onclick="removePost(${postCount})">Remover</button>
+                        <button class="edit-button" onclick="editPost(${postCount}, this)">Editar</button>
+                    </div>
+                    <textarea style="display: none;">${text}</textarea>`;
+
+                post.innerHTML = postHTML;
+                document.getElementById('posts').appendChild(post);
+
+                const postButtons = post.querySelector('.post-buttons');
+                postButtons.style.display = "block";
+
+                // Salva os dados da postagem
+                postsData.push({ id: postCount, text: text, photos: null });
+
+                document.getElementById('postText').value = '';
+                document.getElementById('photoInputLabel').innerHTML = 'Selecionar Fotos';
+                document.getElementById('photoInput').value = '';
+                closeModal();
+            }
+        }
+
+        function removePost(id) {
+            const post = document.querySelector(`.post[data-id='${id}']`);
+            post.remove();
+        }
+
+        function editPost(id, button) {
+            const postData = postsData.find(post => post.id === id);
+            const postText = postData.text;
+            const postPhotos = postData.photos;
+
+            document.getElementById('editModal').style.display = "block";
+
+            document.getElementById('editPostText').value = postText;
+
+            const editedPhotosContainer = document.getElementById('editedPhotosContainer');
+
+            if (postPhotos) {
+                for (let i = 0; i < postPhotos.length; i++) {
+                    const img = document.createElement('img');
+                    img.src = postPhotos[i];
+                    img.alt = "Foto";
+                    img.className = "edited-photo";
+                    const removeBtn = document.createElement('span');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.className = 'remove-photo';
+                    removeBtn.onclick = function () {
+                        this.parentNode.remove();
+                    };
+                    img.appendChild(removeBtn);
+                    editedPhotosContainer.appendChild(img);
+                }
+            }
+
+            document.getElementById('editPhotoInput').onchange = function () {
+                const files = this.files;
+                for (let i = 0; i < files.length; i++) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = "edited-photo";
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(files[i]);
+                    img.alt = "Foto";
+                    img.className = "post-image";
+                    const removeBtn = document.createElement('span');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.className = 'remove-photo';
+                    removeBtn.onclick = function () {
+                        this.parentNode.remove();
+                    };
+                    imgContainer.appendChild(img);
+                    imgContainer.appendChild(removeBtn);
+                    editedPhotosContainer.appendChild(imgContainer); // Adiciona a nova foto ao contêiner de fotos editadas
+                }
+            };
+
+            document.getElementById('saveEditButton').onclick = function () {
+                const editedText = document.getElementById('editPostText').value;
+                const editedPhotos = editedPhotosContainer.querySelectorAll('img');
+
+                // Atualizar os dados da postagem
+                postData.text = editedText;
+                postData.photos = [];
+                editedPhotos.forEach(photo => {
+                    postData.photos.push(photo.src);
+                });
+
+                // Atualizar a interface da postagem
+                const post = document.querySelector(`.post[data-id='${id}']`);
+                post.querySelector('textarea').innerText = editedText;
+
+                // Remove todas as imagens existentes
+                const postImages = post.querySelectorAll('.post-image');
+                postImages.forEach(img => img.remove());
+
+                // Adiciona as novas imagens ao lado das antigas
+                editedPhotos.forEach(photo => {
+                    const newImg = document.createElement('img');
+                    newImg.src = photo.src;
+                    newImg.alt = "Foto";
+                    newImg.className = "post-image";
+                    post.appendChild(newImg);
+                });
+
+                closeModal();
+            };
+
+
+        }
+
+        // Select All Checkbox
+        document.getElementById('selectAll').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('.post input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Selecionar todos os grupos
+        document.getElementById('selectAllButton').addEventListener('click', function () {
+            const checkboxes = document.querySelectorAll('#groupList input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+    </script>
+</body>
+
+</html>
